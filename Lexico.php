@@ -1,7 +1,7 @@
 <?php
 
 	class Lexico{
-		public $palabrasReservadas = ["switch", "case", "default" ,"break" ,"int", "float"];
+		public $palabrasReservadas = ["switch", "case", "default" ,"break" ,"int", "float", "true", "false"];
 		//EXPRESIONES REGULARES PARA TOKENS
 		// public $er_com = '/\/\/.*/'; //COMENTARIO SIMPLE
 		public $er_id = '/([a-z|A-Z])([a-z]|[A-Z]|[0-9]|_)*/';
@@ -11,6 +11,8 @@
 		public $er_break_word = '/break/';
 		public $er_int_word = '/int/';
 		public $er_float_word = '/float/';
+		public $er_boolean_word = '/boolean/';
+		public $er_boolean = '/true|false/';
 		public $er_delimitator = '/;{1,1}/';
 		public $er_aritmetic_symbol = '/(\+|-|\*|\/|%){1,1}/';
 		public $er_relational_operator = '/(>=|<=|==|===|<>|!=|>|<)/';
@@ -22,7 +24,7 @@
 
 		public $er_number = '/\b([0-9])+/';
 		public $er_float = '/[0-9]*\.[0-9]+/';
-		public $er_cad = '/"([^"])*"/';
+		// public $er_cad = '/"([^"])*"/';
 
 		//EXPRESIONES REGULARES PARA ERRORES
 		// public $er_char = '/\b[^\$_\-\+\=\t\n\s\*\/<>]([a-z]|[A-Z])+\b/';
@@ -47,13 +49,15 @@
 			$txt = $this->replaceLexemas($lexemas["FLOAT"], " FLOAT",$txt);
 			$txt = $this->replaceLexemas($lexemas["NUM"], " NUM",$txt);
 			// var_dump($lexemas["NUM"]);
-			$txt = $this->replaceLexemas($lexemas["ID"], " ID", $txt);
 			$txt = $this->replaceLexemas($lexemas["SWITCH"], " SWITCH",$txt);
 			$txt = $this->replaceLexemas($lexemas["CASE"], " CASE", $txt);
 			$txt = $this->replaceLexemas($lexemas["DEFAULT"], " DEFAULT", $txt);
 			$txt = $this->replaceLexemas($lexemas["BREAK"], " BREAK", $txt);
 			$txt = $this->replaceLexemas($lexemas["INT_R"], " INT_R", $txt);
 			$txt = $this->replaceLexemas($lexemas["FLOAT_R"], " FLOAT_R", $txt);
+			$txt = $this->replaceLexemas($lexemas["BOOLEAN_R"], " BOOLEAN_R", $txt);
+			$txt = $this->replaceLexemas($lexemas["BOOLEAN"], " BOOLEAN", $txt);
+			$txt = $this->replaceLexemas($lexemas["ID"], " ID", $txt);
 			$txt = $this->replaceLexemas($lexemas["OPRE"], " OPRE",$txt);
 
 			$txt = $this->replaceLexemas($lexemas["OPAS"], " OPAS",$txt);
@@ -78,7 +82,9 @@
 			$lexemas["SWITCH"] = $this->getSwitch($txt);
 			$lexemas["CASE"] = $this->getCaseWord($txt);
 			$lexemas["BREAK"] = $this->getBreakWord($txt);
-			$lexemas["FLOAT_R"] = $this->geFloatWord($txt);
+			$lexemas["FLOAT_R"] = $this->getFloatWord($txt);
+			$lexemas["BOOLEAN_R"] = $this->getBooleanWord($txt);
+			$lexemas["BOOLEAN"] = $this->getBoolean($txt);
 			// var_dump($lexemas["ID"]);
 			// $lexemas["COM"] = $this->getComs($txt);
 			$lexemas["FLOAT"] = $this->getFloats($txt);
@@ -195,7 +201,7 @@
 			return $this->getMatches($txt, $this->er_int_word);
 		}
 
-		public function geFloatWord($txt){
+		public function getFloatWord($txt){
 			return $this->getMatches($txt, $this->er_float_word);
 		}
 
@@ -209,6 +215,14 @@
 
 		public function getBreakWord($txt){
 			return $this->getMatches($txt, $this->er_break_word);
+		}
+
+		public function getBooleanWord($txt){
+			return $this->getMatches($txt, $this->er_boolean_word);
+		}
+
+		public function getBoolean($txt){
+			return $this->getMatches($txt, $this->er_boolean);
 		}
 
 		//Encuentra los tokes de una expresion regular dada y devuelve
