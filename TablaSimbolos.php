@@ -1,4 +1,4 @@
-<?php 
+<?php
 class TablaSimbolos{
 	private $typeTokens=[
 		"ID",
@@ -7,12 +7,12 @@ class TablaSimbolos{
 		"NUM",
 		"FLOAT",
 		"CAES",
-		"WHILE",
-		"COM",
+		"SWITCH",
+		// "COM",
 		"DEL",
 		"OPRE",
 		"OPAS",
-		"CAD"
+		// "CAD"
 	];
 
 
@@ -23,12 +23,12 @@ class TablaSimbolos{
 		"NUM"=>[],
 		"FLOAT"=>[],
 		"CAES"=>[],
-		"WHILE"=>[],
-		"COM"=>[],
+		"SWITCH"=>[],
+		// "COM"=>[],
 		"DEL"=>[],
 		"OPRE"=>[],
 		"OPAS"=>[],
-		"CAD"=>[]
+		// "CAD"=>[]
 	];
 
 	public $simbolo = [
@@ -41,40 +41,40 @@ class TablaSimbolos{
 
 	//devuelve un arreglo ccon el contenido de la tabla de simbolos
 	public function getSimbolos($tokens){
-		for ($i=0; $i < count($this->typeTokens); $i++) {	
+		for ($i=0; $i < count($this->typeTokens); $i++) {
 			$w=1;
 			foreach ($tokens[$this->typeTokens[$i]] as $token) {
-				$this->simbolo["lexema"] = $token; 
+				$this->simbolo["lexema"] = $token;
 				$this->simbolo["token"] = $this->typeTokens[$i].$w;
 				if($this->typeTokens[$i] == "NUM"){
-					$this->simbolo["valor"] = $this->simbolo["lexema"]; 
-					$this->simbolo["tipo"] = "entero"; 
+					$this->simbolo["valor"] = $this->simbolo["lexema"];
+					$this->simbolo["tipo"] = "entero";
 				}
 				elseif ($this->typeTokens[$i] == "FLOAT") {
-					$this->simbolo["valor"] = $this->simbolo["lexema"]; 
-					$this->simbolo["tipo"] = "flotante"; 					
+					$this->simbolo["valor"] = $this->simbolo["lexema"];
+					$this->simbolo["tipo"] = "flotante";
 				}
 				elseif ($this->typeTokens[$i] == "CAD") {
-					$this->simbolo["valor"] = $this->simbolo["lexema"]; 
-					$this->simbolo["tipo"] = "cadena"; 					
+					$this->simbolo["valor"] = $this->simbolo["lexema"];
+					$this->simbolo["tipo"] = "cadena";
 				}
 				else {
 					$this->simbolo["valor"] ="";
 					$this->simbolo["tipo"] ="";
 				}
-				$this->simbolos[$this->typeTokens[$i]][] = $this->simbolo; 
-				$w++;	
+				$this->simbolos[$this->typeTokens[$i]][] = $this->simbolo;
+				$w++;
 			}
 		}
 	}
 
 	public function getAllTables($tokens){
 		$table = "";
-		for ($i=0; $i < count($this->typeTokens); $i++) {	
+		for ($i=0; $i < count($this->typeTokens); $i++) {
 			$table.=$this->build_table_tokens($tokens[$this->typeTokens[$i]],$this->typeTokens[$i]);
 		}
 		return $table;
-	}	
+	}
 
 
 	//crea una tabla de simbolos a partir de un arreglo de tokens y el tipo de tokens que se le dan
