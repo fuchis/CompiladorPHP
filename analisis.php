@@ -18,7 +18,7 @@ error_reporting(0);
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=	, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 		<title>Analizado</title>
 		<link rel="stylesheet" href="style.css">
 	</head>
@@ -27,7 +27,7 @@ error_reporting(0);
 		<textarea name="instrucciones" id="instrucciones" cols="30" rows="10"><?php
 				echo $instrucciones;
 		?></textarea>
-		<textarea name="instrucciones" id="instrucciones" cols="30" rows="10"><?php
+		<textarea name="instrucciones" id="instrucciones2" cols="30" rows="10"><?php
 		 	echo $analizador->getFinalText($instrucciones);
 
 		 	//se guardan los tokens a una variable del objeto semantico para posterion analisis
@@ -35,6 +35,16 @@ error_reporting(0);
 			$txt = preg_split("/[\s]+/", trim($analizador->getFinalText($instrucciones)));
 		 ?>
 </textarea>
+
+		<br><br>
+		<table border="1" id="tabla">
+			<tr>
+				<th>Lexema</th>
+				<th>Token</th>
+				<th>Valor</th>
+				<th>Tipo</th>
+			</tr>
+		</table>
 
 		<br><br><a href="index.php"> <---  Ingresar otras intrucciones</a><br><br>
 		<label>bloc de notas puede mostrar mal el formato del archivo</label>
@@ -76,5 +86,6 @@ error_reporting(0);
 			León Peraza Jessica Gpe.
 
 		</footer>
+		<script src="lexico.js"></script>
 	</body>
 </html>
