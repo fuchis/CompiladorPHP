@@ -1,10 +1,14 @@
 <?php
 
 	class Lexico{
-
-		//ESPRESIONES REGULARES PARA TOKENS
+		public $palabrasReservadas = ["switch", "case", "default" ,"break" ,"int", "float"];
+		//EXPRESIONES REGULARES PARA TOKENS
 		// public $er_com = '/\/\/.*/'; //COMENTARIO SIMPLE
 		public $er_id = '/([a-z|A-Z])([a-z]|[A-Z]|[0-9]|_)*/';
+		public $er_switch = '/switch/';
+		public $er_case_word = '/case/';
+		public $er_default_word = '/default/';
+		public $er_break_word = '/break/';
 		public $er_int_word = '/int/';
 		public $er_float_word = '/float/';
 		public $er_delimitator = '/;{1,1}/';
@@ -19,7 +23,6 @@
 		public $er_number = '/\b([0-9])+/';
 		public $er_float = '/[0-9]*\.[0-9]+/';
 		public $er_cad = '/"([^"])*"/';
-		public $er_switch = '/switch/';
 
 		//EXPRESIONES REGULARES PARA ERRORES
 		// public $er_char = '/\b[^\$_\-\+\=\t\n\s\*\/<>]([a-z]|[A-Z])+\b/';
@@ -45,6 +48,12 @@
 			$txt = $this->replaceLexemas($lexemas["NUM"], " NUM",$txt);
 			// var_dump($lexemas["NUM"]);
 			$txt = $this->replaceLexemas($lexemas["ID"], " ID", $txt);
+			$txt = $this->replaceLexemas($lexemas["SWITCH"], " SWITCH",$txt);
+			$txt = $this->replaceLexemas($lexemas["CASE"], " CASE", $txt);
+			$txt = $this->replaceLexemas($lexemas["DEFAULT"], " DEFAULT", $txt);
+			$txt = $this->replaceLexemas($lexemas["BREAK"], " BREAK", $txt);
+			$txt = $this->replaceLexemas($lexemas["INT_R"], " INT_R", $txt);
+			$txt = $this->replaceLexemas($lexemas["FLOAT_R"], " FLOAT_R", $txt);
 			$txt = $this->replaceLexemas($lexemas["OPRE"], " OPRE",$txt);
 
 			$txt = $this->replaceLexemas($lexemas["OPAS"], " OPAS",$txt);
@@ -53,7 +62,6 @@
 			$txt = $this->replaceLexemas($lexemas["OPAR"], " OPAR",$txt);
 			$txt = $this->replaceLexemas($lexemas["OPLO"], " OPLO",$txt);
 			$txt = $this->replaceLexemas($lexemas["CAES"], " CAES",$txt);
-			$txt = $this->replaceLexemas($lexemas["SWITCH"], " SWITCH",$txt);
 			$txt = $this->replaceLexemas($lexemas["DEL"], " DEL",$txt);
 			// $txt = $this->replaceLexemas($lexemas["CAD"], " CAD",$txt);
 
@@ -64,24 +72,21 @@
 		//EL TIPO DE TOKEN AL QUE PERTENECE CADA LEXEMA
 		//LOS ARREGLOS DENTRO DE CADA CASILLA CONTIENEN TODOS LOS LEXEMAS DIFERENTES DEL TEXTO DADO
 		public function getLexemas($txt){
+			$lexemas["INT_R"] = $this->geIntWord($txt);
 			$lexemas["ID"] = $this->getIds($txt);
+			$lexemas["DEFAULT"] = $this->getDefaultWord($txt);
+			$lexemas["SWITCH"] = $this->getSwitch($txt);
+			$lexemas["CASE"] = $this->getCaseWord($txt);
+			$lexemas["BREAK"] = $this->getBreakWord($txt);
+			$lexemas["FLOAT_R"] = $this->geFloatWord($txt);
 			// var_dump($lexemas["ID"]);
 			// $lexemas["COM"] = $this->getComs($txt);
 			$lexemas["FLOAT"] = $this->getFloats($txt);
 			$txt = $this->replaceLexemas($lexemas["FLOAT"]," FLOAT",$txt);
 			$lexemas["NUM"] = $this->getNumbers($txt);
-			// $lexemas["CAD"] = $this->getCads($txt);
-			//SE REEMPLAZAN LOS COMENTARIOS PARA EVITAR QUE APAREZCAN
-			//TOKENS QUE ESTEN DENTRO DEL COMENTARIO
-			// $txt = $this->replaceLexemas($lexemas["COM"]," COM",$txt);
-			//SE REEMPLAZAN LAS CADENAS PARA IMPEDIR QUE SE CONFUNDA SU CONTENIDO
-			//CON TOKENS CARACTERES
-			// $txt = $this->replaceLexemas($lexemas["CAD"]," CAD",$txt);
-
 			$lexemas["OPAR"] = $this->getAritmeticSymbols($txt);
 			$lexemas["OPLO"] = $this->getLogicOperators($txt);
 			$lexemas["CAES"] = $this->getSpecialCharacters($txt);
-			$lexemas["SWITCH"] = $this->getSwitch($txt);
 			$lexemas["DEL"] = $this->getDelimitators($txt);
 			//$lexemas["CHAR"] = $this->getChars($txt);
 			$lexemas["OPRE"] = $this->getRelationalOperatorators($txt);
@@ -103,10 +108,10 @@
 				elseif($tokenName == " FLOAT") {
 					$txt= preg_replace('/\b'.$lexema.'/',$tokenName.($keys[$i]+1),$txt);
 				}
-				//remplaza cadenas
-				elseif($tokenName == " CAD") {
-					$txt = preg_replace('/'.$lexema.'/',$tokenName.($i+1),$txt);
-				}
+				// //remplaza cadenas
+				// elseif($tokenName == " CAD") {
+				// 	$txt = preg_replace('/'.$lexema.'/',$tokenName.($i+1),$txt);
+				// }
 
 				//remplaza signos de igual
 				elseif($tokenName == " OPAS") {
@@ -129,9 +134,11 @@
 		public function getIds($txt){
 			$tokens = array();
 			$tokensTemp = $this->getMatches($txt,$this->er_id);
+			// var_dump($tokensTemp);
 			foreach ($tokensTemp as $token) {
-				if($token != "switch")
-				$tokens[] = $token;
+				// var_dump(in_array($token,$this->palabrasReservadas));
+				if(!in_array($token,$this->palabrasReservadas))
+					$tokens[] = $token;
 			}
 			return $tokens;
 		}
@@ -181,6 +188,27 @@
 
 		public function getSwitch($txt){
 			return $this->getMatches($txt, $this->er_switch);
+		}
+
+		//GET PALABRAS RESERVADAS
+		public function geIntWord($txt){
+			return $this->getMatches($txt, $this->er_int_word);
+		}
+
+		public function geFloatWord($txt){
+			return $this->getMatches($txt, $this->er_float_word);
+		}
+
+		public function getCaseWord($txt){
+			return $this->getMatches($txt, $this->er_case_word);
+		}
+
+		public function getDefaultWord($txt){
+			return $this->getMatches($txt, $this->er_default_word);
+		}
+
+		public function getBreakWord($txt){
+			return $this->getMatches($txt, $this->er_break_word);
 		}
 
 		//Encuentra los tokes de una expresion regular dada y devuelve

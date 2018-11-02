@@ -27,7 +27,6 @@ error_reporting(0);
 		<textarea name="instrucciones" id="instrucciones" cols="30" rows="10"><?php
 				echo $instrucciones;
 		?></textarea>
-
 		<textarea name="instrucciones" id="instrucciones" cols="30" rows="10"><?php
 		 	echo $analizador->getFinalText($instrucciones);
 
