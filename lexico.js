@@ -32,10 +32,17 @@ function init() {
     lexTokSinRepetir = eliminarDuplicados(lexTokOriginal, "lexema");
     console.log(lexTokOriginal);
     crearTabla(lexTokSinRepetir);
-    sintactico();
-    
+    sintactico();    
 };
 
+function busquedaObjetoPorKey(array, key, value) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i][key] === value) {
+            return array[i];
+        }
+    }
+    return false;
+}
 
 function obtenerTokens(tablaSimbolos){
     tablaSimbolos.forEach(function(token){
