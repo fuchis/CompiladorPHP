@@ -3,17 +3,18 @@ let input;
 let output;
 let inputLines = [];
 let inputLines2 = [];
-
+let lexemas = [];
 let outputLines = [];
 let lexTokOriginal = [];
 let lexTokSinRepetir = [];
-let lexTokSinRepetir2 = [];
 
 init();
+
 
 function init() {
     inputLines = [];
     outputLines = [];
+    lexemas = [];
     input = document.getElementById("instrucciones").value;
     output = document.getElementById("instrucciones2").value;
     inputLines = separadorLineas(input);
@@ -31,7 +32,16 @@ function init() {
     lexTokSinRepetir = eliminarDuplicados(lexTokOriginal, "lexema");
     console.log(lexTokOriginal);
     crearTabla(lexTokSinRepetir);
+    sintactico();
+    
 };
+
+
+function obtenerTokens(tablaSimbolos){
+    tablaSimbolos.forEach(function(token){
+        lexemas.push(token.token);
+    })
+}
 
 //Elimina los elementos duplicados en un objeto por Propiedad
 function eliminarDuplicados(myArr, prop) {
