@@ -43,6 +43,8 @@ error_reporting(0);
 				<th>Token</th>
 				<th>Valor</th>
 				<th>Tipo</th>
+				<th>Numero de Linea</th>
+
 			</tr>
 		</table>
 
