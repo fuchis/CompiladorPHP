@@ -88,6 +88,8 @@ error_reporting(0);
 			León Peraza Jessica Gpe.
 
 		</footer>
+		<script src="sintactico.js"></script>
 		<script src="lexico.js"></script>
+
 	</body>
 </html>
