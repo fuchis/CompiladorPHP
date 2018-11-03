@@ -20,7 +20,7 @@
 		public $er_operator_asignation = '/=/';
 
 		public $er_logic_operator = '/((\|{2,2})|&&|!){1,1}/';
-		public $er_specialChar = '/(\(|\)|\{|\}){1,1}/';
+		public $er_specialChar = '/(\(|\)|\{|\}|\:){1,1}/';
 
 		public $er_number = '/\b([0-9])+/';
 		public $er_float = '/[0-9]*\.[0-9]+/';
