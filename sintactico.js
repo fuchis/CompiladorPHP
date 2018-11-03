@@ -1,42 +1,48 @@
-//Expresiones Regulares /\+|\-|\/|\*|\=/
-let aritmeticas = "(\\+|-|\\*|\\/|%){1,1}";
-let asignacion = "=";
-let opLog = "((\\|{2,2})|&&|!){1,1}";
-let blockCodeChar = "(\\(|\\)|\\{|\\}){1,1}";
-let numeros = "([0-9])+";
-let numerosF = "[0-9]*\\.[0-9]+"
-let entero = "int";
-let flotante = "float";
-let relacionales = "(>=|<=|==|!=|>|<)";
-let variables = /([_|a-z|A-Z])+([a-z]|[A-Z]|[0-9]|_)*/;
-let delimitador = ";{1,1}";
-let Switch = /Switch[0-9]+/;
-let Case =  "case";
-let Break = "break";
-let Default = "default";
+//Expresiones regulares de tokens
+// tokens
+let tkn_id = "ID[0-9]+";
+let	tkn_num = "NUM[0-9]+";
+let tkn_float = "FLOAT[0-9]+";
+let tkn_opas = "OPAS1";
+let tkn_opar = "OPAR[0-9]+";
+let tkn_opre = "OPRE[0-9]+";
+let tkn_oplo = "OPLO[0-9]+";
+let tkn_caes = "CAES[0-9]+";
+let tkn_del = "DEL1";
 
-let id = /ID[0-9]+/;
-let	num = "NUM[0-9]+";
-let float = "FLOAT[0-9]+";
-let cad = "CAD[0-9]+";
-let opas = "OPAS1";
-let opar = "OPAR[0-9]+";
-let del = "/DEL1/";
-let caes = "CAES[0-9]";
-let opre = "OPRE[0-9]+";
-let oplo = "OPLO[0-9]+";
-let Boolean = "BOOLEAN_R[0-9]+";
-let Float_R = "FLOAT_R[0-9]+";
-let Int_R = /INT_R[0-9]+/;
+// palabras reservadas
+let tkn_boolean_r = "BOOLEAN_R[0-9]+";
+let tkn_float_r = "FLOAT_R[0-9]+";
+let tkn_int_r = "INT_R[0-9]+";
+let tkn_switch_r = "SWITCH[0-9]";
+let tkn_case_r = "CASE[0-9]";
+let tkn_break_r = "BREAK[0-9]";
+let tkn_break_r = "DEFAULT[0-9]";
 
 let pila = [];
-let errores = [];
+
 
 let inicioSwitch = false;
 let contenidoSwitch = false;
 let cierreSwitch = 0;
 
 
+//for para recorrer todos los TOKENS
+//
+// switch (tamaño de pila)
+//
+//  case 0: pila vacia -- que tokens pueden recibirse
+//  case 1: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+//  case 2: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+//  case 3: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+//  case 4: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+//  case 5: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+//  case 6: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+//  case 7: la pila contiene {TOKENS POSIBLES} -- {POSIBLES TOKEN A RECIBIR}
+
+//cierre del for
+
+// se comprueba que el cierre del while ocurrió
 
 function sintactico(){
     obtenerTokens(lexTokOriginal);
@@ -59,8 +65,7 @@ function recorrerPila(lex) {
                     }
                 }
             }
-        }        
+        }
     });
 
 }
-
