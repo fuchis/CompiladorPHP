@@ -7,6 +7,7 @@ let lexemas = [];
 let outputLines = [];
 let lexTokOriginal = [];
 let lexTokSinRepetir = [];
+let test = [];
 
 init();
 
@@ -14,11 +15,13 @@ init();
 function init() {
     inputLines = [];
     outputLines = [];
+    test = [];
     lexemas = [];
     input = document.getElementById("instrucciones").value;
     output = document.getElementById("instrucciones2").value;
     inputLines = separadorLineas(input);
     outputLines = separadorLineas(output);
+    test = outputLines;
     inputLines2 = inputLines;
     inputLines2 = agregarNumeroLineas(inputLines2);
     inputLines2 = separadorEspacioObjeto(inputLines2);
