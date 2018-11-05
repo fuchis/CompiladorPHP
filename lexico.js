@@ -48,9 +48,11 @@ function busquedaObjetoPorKey(array, key, value) {
 }
 
 function obtenerTokens(tablaSimbolos){
+    let lex = [];
     tablaSimbolos.forEach(function(token){
-        lexemas.push(token.token);
+        lex.push(token.token);
     })
+    return lex;
 }
 
 //Elimina los elementos duplicados en un objeto por Propiedad
