@@ -27,14 +27,20 @@ let inicioSwitch = false;
 let contenidoSwitch = false;
 let cierreSwitch = 0;
 let tokensSwitch = [];
+let asignacionVar = []
+let switchVar = [];
+let varID  = [];
 
 function sintactico() {
     lexemas = [];
     lexemas = obtenerTokens(lexTokOriginal);
-    recorrerPila(lexemas)
+    recorrerPila(lexemas);
     console.log(lexemas);
     console.log(ultimaInstruccion);
     console.log(erroresSintacticos);
+    console.log(asignacionVar);
+    console.log(switchVar);
+    console.log(varID);
 
 };
 
@@ -45,15 +51,14 @@ function recorrerPila(lex) {
             switch (pila.length) {
                 case 0: // Pila vacia, esperando que busque algun token, comienzo del analisis sintactico
                     //Se espera una expresion de con un token de tipo INT
+
                     if (lexema.match(tkn_int_r)) {
                         if ((index + 1) === lex.length) { // Se comprueba si el indice + 1 es igual al tamanio del arreglo
                             pila.push(lexema);      // Si es igual se agrega un error sintactico, pues ya no hay mas tokens
-
                             erroresSintacticos.push("Faltante despues de la variable " + lexema);
                             pila = [];
                             return;
                         } else { //Si es menor(quiere decir que aun hay mas tokens), se mete el token valido a la pila
-
                             pila.push(lexema);
                             return;
                         }
@@ -84,11 +89,41 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
+                            varID.push({ variable: lexema });
                             pila.push(lexema);
                             return;
                         }
-                    } else if (lexema.match(tkn_switch_r)) {  //Comprueba si hay un Token de tipo SWITCH
-
+                    } else if (lexema.match(tkn_case_r)) { //Comprueba si hay un token de tipo CASE
+                        if ((index + 1) === lex.length) {
+                            pila.push(lexema);
+                            erroresSintacticos.push("Faltante despues del CASE: " + lexema);
+                            pila = [];
+                            return;
+                        } else {
+                            pila.push(lexema);
+                            return;
+                        }
+                    } else if (lexema.match(tkn_break_r)) { //Comprueba si hay un token de tipo BREAK
+                        if ((index + 1) === lex.length) {
+                            pila.push(lexema);
+                            erroresSintacticos.push("Faltante despues del BREAK: " + lexema);
+                            pila = [];
+                            return;
+                        } else {
+                            pila.push(lexema);
+                            return;
+                        }
+                    } else if (lexema.match(tkn_default_r)) { //Comprueba si hay un token de tipo ID
+                        if ((index + 1) === lex.length) {
+                            pila.push(lexema);
+                            erroresSintacticos.push("Faltante despues del DEFAULT: " + lexema);
+                            pila = [];
+                            return;
+                        } else {
+                            pila.push(lexema);
+                            return;
+                        }
+                    }else if (lexema.match(tkn_switch_r)) {  //Comprueba si hay un Token de tipo SWITCH
                         if ((index + 1) === lex.length) {
                             pila.push(lexema);
                             erroresSintacticos.push("Se esperaba un ( despues de " + lexema);
@@ -107,44 +142,12 @@ function recorrerPila(lex) {
                             pila.push(lexema);
                             ultimaInstruccion.push(pila);
                             pila = []
-                        } else if (contenidoSwitch) {
-                            if (lexema.match(tkn_case_r)) { //Comprueba si hay un token de tipo CASE
-                                if ((index + 1) === lex.length) {
-                                    pila.push(lexema);
-                                    erroresSintacticos.push("Faltante despues del CASE: " + lexema);
-                                    pila = [];
-                                    return;
-                                } else {
-                                    pila.push(lexema);
-                                    return;
-                                }
-                            } else if (lexema.match(tkn_break_r)) { //Comprueba si hay un token de tipo BREAK
-                                if ((index + 1) === lex.length) {
-                                    pila.push(lexema);
-                                    erroresSintacticos.push("Faltante despues del BREAK: " + lexema);
-                                    pila = [];
-                                    return;
-                                } else {
-                                    pila.push(lexema);
-                                    return;
-                                }
-                            } else if (lexema.match(tkn_default_r)) { //Comprueba si hay un token de tipo ID
-                                if ((index + 1) === lex.length) {
-                                    pila.push(lexema);
-                                    erroresSintacticos.push("Faltante despues del DEFAULT: " + lexema);
-                                    pila = [];
-                                    return;
-                                } else {
-                                    pila.push(lexema);
-                                    return;
-                                }
-                            }
-
                         }
                         return;
                     }
 
                 case 1:
+                    
                     if (lexema.match(tkn_opas)) { // Espera un operador de asignacion
                         if ((index + 1) == lex.length) {
                             pila.push(lexema);
@@ -154,45 +157,46 @@ function recorrerPila(lex) {
                             pila.push(lexema);
                             return;
                         }
-                        //CONTENIDO DE SWITCH CASO CASE NUM 
-                    }
-                    else if (inicioSwitch) { //Si previamente se detecto un SWITCH
-                        if (contenidoSwitch) {
-                            if (lexema.match(tkn_num)) { //Comprueba si hay un token de tipo CASE
-                                if ((index + 1) === lex.length) {
-                                    pila.push(lexema);
-                                    erroresSintacticos.push("Faltante despues del CASE NUM: " + lexema);
-                                    pila = [];
-                                    return;
-                                } else {
-                                    pila.push(lexema);
-                                    //ultimaInstruccion.push(pila);
-                                    //pila = []
-                                    return;
-                                }
-                            } else if (tkn_caes) {
-                                let dosPuntos = busquedaObjetoPorKey(lexTokOriginal, "lexema", ":"); //buscar que el sigueinte token sea un }
-                                if (lexema == dosPuntos.token) {//Se espera que el token actual sea :
-                                    pila.push(lexema);
-                                    ultimaInstruccion.push(pila);
-                                    pila = []
-                                    return;
-                                } else {
-                                    //erroresSintacticos.push("Se esperaba un :");
-                                    return;
-                                }
+                    } else if (lexema.match(tkn_id)) { //en caso de que no sea un switch el primer token, se evalua si es un ID(en caso de que halla sido un token de tipo de dato)
+                        if ((index + 1) === lex.length) { //se checa si es el fin
+                            pila.push(lexema);
+                            erroresSintacticos.push("Faltante despues de la variable " + lexema); //si no hay mas, agregar error
+                            pila = [];
+                            return;
+                        } else {
+                            tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
 
-                            }else if (tkn_del) {
-                                pila.push(lexema);
-                                ultimaInstruccion(pila);
-                                pila = [];
-                                return ; 
-                            }
-                            
-
+                            varID.push({ variable:  tokenSearch1.lexema, numeroLinea:  tokenSearch1.numeroLinea });
+                            pila.push(lexema);// si no, agregar token a pila
+                            return;
                         }
+                    } else if (lexema.match(tkn_num)) { //en caso de que no sea un switch el primer token, se evalua si es un ID(en caso de que halla sido un token de tipo de dato)
+                        if ((index + 1) === lex.length) { //se checa si es el fin
+                            pila.push(lexema);
+                            erroresSintacticos.push("Faltante despues de la variable " + lexema); //si no hay mas, agregar error
+                            pila = [];
+                            return;
+                        } else {
+                            pila.push(lexema);// si no, agregar token a pila
+                            return;
+                        }
+                    } else if (lexema.match(tkn_float)) { //en caso de que no sea un switch el primer token, se evalua si es un ID(en caso de que halla sido un token de tipo de dato)
+                        if ((index + 1) === lex.length) { //se checa si es el fin
+                            pila.push(lexema);
+                            erroresSintacticos.push("Faltante despues de la variable " + lexema); //si no hay mas, agregar error
+                            pila = [];
+                            return;
+                        } else {
+                            pila.push(lexema);// si no, agregar token a pila
+                            return;
+                        }
+                    } else if (lexema.match(tkn_del)) { //en caso de que no sea un switch el primer token, se evalua si es un ID(en caso de que halla sido un token de tipo de dato)
+                        pila.push(lexema);
+                        ultimaInstruccion.push(pila);
+                        pila = [];
+                        return;
 
-
+                    }else if (inicioSwitch) { //Si previamente se detecto un SWITCH
                         if (lexema.match(tkn_caes)) { // El caracter actual debe ser un: (
                             let parizq = busquedaObjetoPorKey(lexTokOriginal, "lexema", "("); //Se buscar que sea un (
                             if (lexema == parizq.token) { //Si es un ( y no otro caracter especial
@@ -210,78 +214,37 @@ function recorrerPila(lex) {
                             }
 
                         } else if (lexema.match(tkn_opas)) { // Espera un operador de asignacion
-
                             pila.push(lexema);
                             return;
-
                             //CONTENIDO DE SWITCH CASO CASE NUM 
                         } else {
-                            pila.push(lexema);
-                            erroresSintacticos.push("Se esperaba un ("); //Si no es un caracter especial se agrega error
                             pila = [];
                             return;
                         }
-                    } else if (lexema.match(tkn_id)) { //en caso de que no sea un switch el primer token, se evalua si es un ID(en caso de que halla sido un token de tipo de dato)
-                        if ((index + 1) === lex.length) { //se checa si es el fin
-                            pila.push(lexema);
-                            erroresSintacticos.push("Faltante despues de la variable " + lexema); //si no hay mas, agregar error
-                            pila = [];
-                            return;
-                        } else {
-                            pila.push(lexema);// si no, agregar token a pila
-                            return;
-                        }
-
                     }
-
                     break;
                 case 2:
+
                     if (lexema.match(tkn_id)) {
                         if ((index + 1) == lex.length) {
                             pila.push(lexema);
-                            if (inicioSwitch) {
-                                erroresSintacticos.push("Se esperaba un )");
-                                pila = [];
-                                break;
-                            } else {
-                                erroresSintacticos.push("Operador de asignacion o Delimitador ; flatante");
-                                pila = [];
-                                return;
-                            }
-
-                        } else {
-                            pila.push(lexema); //en SWITCH ( ID guarda el ID a pila
-                            return;
-                        }
-                    } else if (inicioSwitch) { //Si previamente se detecto un SWITCH
-                        if (contenidoSwitch) {
-                            let dosPuntos = busquedaObjetoPorKey(lexTokOriginal, "lexema", ":"); //buscar que el sigueinte token sea un }
-                            if (lexema == dosPuntos.token) {//Se espera que el token actual sea :
-                                pila.push(lexema);
-                                ultimaInstruccion.push(pila);
-                                pila = []
-                                return;
-
-                            } else {
-                                //erroresSintacticos.push("Se esperaba un :");
-                                return;
-                            }
-
-                        }
-                        if (lexema.match(tkn_id)) { // El caracter actual debe ser un: ID
-
-                            if ((index + 1) === lex.length) { // Se checa si el indice + 1 alcanza el limite
-                                erroresSintacticos.push("se esperaba un ), despues de" + lexema); //si lo alacanzo agregar error se esperaba 1 variable despues de (
-                                pila = []; // se vacia la pila
-                                break;
-                            } else {
-                                pila.push(lexema);
-                                return;
-                            }
-
-                        } else {
-                            erroresSintacticos.push("Se esperaba un ID"); //Si no es un caracter especial se agrega error
+                            
+                            erroresSintacticos.push("Se esperaba un valor ");
                             pila = [];
+                            break;
+                            
+
+                        } else {
+                                
+                            let tokenSearch1;
+                            let tokenSearch2;
+                            let tokenSearch3;
+
+                            tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                            tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                            switchVar.push({lexema: tokenSearch2.lexema, token: lexema, numeroLinea: tokenSearch2.numeroLinea});
+                                
+                            pila.push(lexema); //en SWITCH ( ID guarda el ID a pila
                             return;
                         }
                     } else if (lexema.match(tkn_boolean)) {
@@ -317,10 +280,19 @@ function recorrerPila(lex) {
                     }
                     else if (lexema.match(tkn_del)) {  //expresion FLOAT|INT A ; 
                         pila.push(lexema); //Guarda el DEL ; en pila
-
                         ultimaInstruccion.push(pila);
                         pila = [];
                         return;
+                    } else if (lexema.match(tkn_caes)) {
+
+                        let dosPuntos = busquedaObjetoPorKey(lexTokOriginal, "lexema", ":"); //buscar que el sigueinte token sea un }
+                        if (lexema == dosPuntos.token) {//Se espera que el token actual sea :
+                            pila.push(lexema);
+                            ultimaInstruccion.push(pila);
+                            pila = []
+                            return;
+                        }
+
                     } else if (lexema.match(tkn_opas)) { // en caso de un INT ID = 
                         if ((index + 1) == lex.length) { //Comprobar si no es FIN de arreglo
                             pila.push(lexema);  //Si lo es, agregar error
@@ -329,6 +301,23 @@ function recorrerPila(lex) {
                         } else {
                             pila.push(lexema); //Si hay mas elementos, agregar token actaul a pila
                             return;
+                        }
+                    } else if (inicioSwitch) { //Si previamente se detecto un SWITCH
+
+                        if (lexema.match(tkn_id)) { // El caracter actual debe ser un: ID
+
+                            if ((index + 1) === lex.length) { // Se checa si el indice + 1 alcanza el limite
+                                erroresSintacticos.push("se esperaba un ), despues de" + lexema); //si lo alacanzo agregar error se esperaba 1 variable despues de (
+                                pila = []; // se vacia la pila
+                                break;
+                            } else {
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+
+                                varID.push({ variable:  tokenSearch1.lexema, numeroLinea:  tokenSearch1.numeroLinea });
+                                pila.push(lexema);
+                                return;
+                            }
+
                         }
                     } else {
                         erroresSintacticos.push("Se esperaba un valor o una variable")
@@ -352,22 +341,6 @@ function recorrerPila(lex) {
 
                         }
                         //CASO SWITCH ( ID )
-                    } else if (inicioSwitch) {
-                        let parDer = busquedaObjetoPorKey(lexTokOriginal, "lexema", ")"); //buscar que el sigueinte token sea un }
-                        if (lexema == parDer.token) {//Se espera que el token actual sea )
-
-                            if ((index + 1) == lex.length) {//Si se encuentra el fin, ya no hay mas tokens...agregar error
-                                pila = []
-                                erroresSintacticos.push("Se esperaba un { despues de: " + lexema);
-                            } else {
-                                pila.push(lexema);
-                                return;
-                            }
-                        } else {
-                            erroresSintacticos.push("Se esperaba un )");
-                            return;
-                        }
-                        //CASO ID = ID OP
                     } else if (lexema.match(tkn_opar)) {
 
                         if ((index + 1) == lex.length) {
@@ -389,6 +362,37 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
+                            let tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema);
+                            varID.push({ variable:  tokenSearch1.lexema, numeroLinea:  tokenSearch1.numeroLinea });  
+
+                            
+                            let tokenSearch2;
+                            let tokenSearch3;
+
+                            if(pila[0].match(tkn_int_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }else if(pila[0].match(tkn_float_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }else if(pila[0].match(tkn_boolean_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }
+
+
+
+
+
+
+
+
                             pila.push(lexema);
                             return;
                         }
@@ -401,6 +405,26 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
+                            let tokenSearch1;
+                            let tokenSearch2;
+                            let tokenSearch3;
+
+                            if(pila[0].match(tkn_int_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }else if(pila[0].match(tkn_float_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch1.lexema, valor: tokenSearch1.Valor})
+                            }else if(pila[0].match(tkn_boolean_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch1.lexema, valor: tokenSearch1.Valor})
+                            }
                             pila.push(lexema);
                             return;
                         }
@@ -413,6 +437,25 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
+                            let tokenSearch1;
+                            let tokenSearch2;
+                            let tokenSearch3;
+                            if(pila[0].match(tkn_int_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }else if(pila[0].match(tkn_float_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch1.lexema, valor: tokenSearch1.Valor})
+                            }else if(pila[0].match(tkn_boolean_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch1.lexema, valor: tokenSearch1.Valor})
+                            }
                             pila.push(lexema);
                             return;
                         }
@@ -425,10 +468,45 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
+                            let tokenSearch1;
+                            let tokenSearch2;
+                            let tokenSearch3;
+                            if(pila[0].match(tkn_int_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }else if(pila[0].match(tkn_float_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }else if(pila[0].match(tkn_boolean_r)){
+                                tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[0])
+                                tokenSearch2 = busquedaObjetoPorKey(lexTokOriginal, "token", pila[1])
+                                tokenSearch3 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+                                asignacionVar.push({tipo:tokenSearch1.lexema, nombreVar:tokenSearch2.lexema, valor: tokenSearch3.Valor, linea:tokenSearch3.numeroLinea })
+                            }
                             pila.push(lexema);
                             return;
                         }
                         //CASO (FLOAT|INT) ID = NUMF
+                    }else if (inicioSwitch) {
+                        let parDer = busquedaObjetoPorKey(lexTokOriginal, "lexema", ")"); //buscar que el sigueinte token sea un }
+                        if (lexema == parDer.token) {//Se espera que el token actual sea )
+
+                            if ((index + 1) == lex.length) {//Si se encuentra el fin, ya no hay mas tokens...agregar error
+                                pila = []
+                                erroresSintacticos.push("Se esperaba un { despues de: " + lexema);
+                            } else {
+                                pila.push(lexema);
+                                return;
+                            }
+                        } else {
+                            erroresSintacticos.push("Se esperaba un )");
+                            return;
+                        }
+                        //CASO ID = ID OP
                     } else {
                         pila = [];
                         erroresSintacticos.push("se esperaba un operador o un delimitador")
@@ -455,11 +533,11 @@ function recorrerPila(lex) {
                         pila.push(lexema);
                         ultimaInstruccion.push(pila);
                         pila = [];
-                        if (!contenidoSwitch) {
-                            return;
-                        } else {
+                        // if (!contenidoSwitch) {
+                        //     return;
+                        // } else {
 
-                        }
+                        // }
                         //CASO ID = ID OP NUM
                     } else if (lexema.match(tkn_float)) {
                         if ((index + 1) == lex.length) {
@@ -489,6 +567,12 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
+                            
+                            
+                                
+                            tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+
+                            varID.push({ variable:  tokenSearch1.lexema, numeroLinea:  tokenSearch1.numeroLinea });                            
                             pila.push(lexema);
                             return;
                         }
@@ -522,7 +606,9 @@ function recorrerPila(lex) {
                             pila = [];
                             return;
                         } else {
-                            pila.push(lexema);
+                            tokenSearch1 = busquedaObjetoPorKey(lexTokOriginal, "token", lexema)
+
+                            varID.push({ variable:  tokenSearch1.lexema, numeroLinea:  tokenSearch1.numeroLinea });                             pila.push(lexema);
                             return;
                         }
 
