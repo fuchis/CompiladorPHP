@@ -182,13 +182,13 @@ function recorrerPila(lex) {
                                     return;
                                 }
 
-                            }
-                            else if (tkn_break_r) {
+                            }else if (tkn_del) {
                                 pila.push(lexema);
-                                ultimaInstruccion.push(pila);
-                                pila = []
-                                return;
+                                ultimaInstruccion(pila);
+                                pila = [];
+                                return ; 
                             }
+                            
 
                         }
 
